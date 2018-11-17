@@ -58,5 +58,29 @@ namespace GeneticalAlgorithms.Core.Helpers
 
             return RandomHelper.GetReproductionRealItems(itemToResultDictionary, items.Count);
         }
+
+        public static List<int[]> ReproduceTSP(List<TSPItem> items, List<int[]> solutions, int populationNumber)
+        {
+            var itemToResultDictionary = solutions.ToDictionary(solution => solution,
+                solution => new ItemAdditionalInfo
+                    { FunctionValue = solution.SolutionValue(items) });
+
+            var maxFunctionValue = itemToResultDictionary.Max(pair => pair.Value.FunctionValue);
+            foreach (var additionalInfo in itemToResultDictionary.Values)
+            {
+                additionalInfo.FunctionValue = maxFunctionValue - additionalInfo.FunctionValue;
+            }
+
+            var sumOfFunc = itemToResultDictionary.Sum(pair => Math.Abs(pair.Value.FunctionValue));
+
+            foreach (var itemInfo in itemToResultDictionary)
+            {
+                itemInfo.Value.NormalizedValue = itemInfo.Value.FunctionValue / sumOfFunc;
+                itemInfo.Value.ExpectedNumberOfCopies = itemInfo.Value.NormalizedValue * populationNumber;
+                itemInfo.Value.RealNumberOfCopies = Convert.ToInt32(Math.Round(itemInfo.Value.ExpectedNumberOfCopies));
+            }
+
+            return RandomHelper.GetReproductionTSPItems(itemToResultDictionary, populationNumber);
+        }
     }
 }

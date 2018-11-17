@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GeneticalAlgorithms.Core.Items;
 
 namespace GeneticalAlgorithms.Core.Helpers
 {
     public static class CrossingoverHelper
     {
+        private const int DefaultUnsetSolution = -1;
+
         public static List<Item> MakeCrossingover(List<Item> reproduceItems)
         {
             var newItems = new List<Item>();
@@ -33,7 +36,7 @@ namespace GeneticalAlgorithms.Core.Helpers
             var crossIndex = RandomHelper.GetCrossIndex(numberOfGens);
             var crossedFirstItemData = new BitArray(numberOfGens);
             var crossedSecondItemData = new BitArray(numberOfGens);
-            for (var i = 0; i < numberOfGens; i++)
+            for (var i = 0; i <= numberOfGens; i++)
             {
                 if (crossIndex > i)
                 {
@@ -90,6 +93,89 @@ namespace GeneticalAlgorithms.Core.Helpers
             var crossedSecondRealItem = new RealItem(secondX1, secondX2);
 
             return new Tuple<RealItem, RealItem>(crossedFirstRealItem, crossedSecondRealItem);
+        }
+
+        public static List<int[]> MakeTSPCrossingover(List<int[]> reproduceItems)
+        {
+            var newItems = new List<int[]>();
+
+            var pairs = RandomHelper.GenerateCrossingoverPairs(reproduceItems.Count);
+
+            foreach (var pair in pairs)
+            {
+                var crossingoverItems = PerformTSPCrossingover(reproduceItems, pair);
+
+                newItems.Add(crossingoverItems.Item1);
+                newItems.Add(crossingoverItems.Item2);
+            }
+
+            return newItems;
+        }
+
+        private static Tuple<int[], int[]> PerformTSPCrossingover(List<int[]> reproduceItems, Tuple<int, int> pair)
+        {
+            var itemFirst = reproduceItems[pair.Item1];
+            var itemSecond = reproduceItems[pair.Item2];
+
+            var numberOfItems = itemFirst.Length;
+
+            var crossIndex1 = RandomHelper.GetTSPRecombinationIndex(0, numberOfItems - 2);
+            var crossIndex2 = RandomHelper.GetTSPRecombinationIndex(crossIndex1 + 1, numberOfItems - 1);
+
+            var crossedFirstSolution = new int[numberOfItems];
+            var crossedSecondSolution = new int[numberOfItems];
+
+            for (var i = 0; i < numberOfItems; i++)
+            {
+                crossedFirstSolution[i] = DefaultUnsetSolution;
+                crossedSecondSolution[i] = DefaultUnsetSolution;
+            }
+
+            for (var index = crossIndex1 + 1; index <= crossIndex2; index++)
+            {
+                crossedFirstSolution[index] = itemSecond[index];
+                crossedSecondSolution[index] = itemFirst[index];
+            }
+
+            for (var index = 0; index <= crossIndex1; index++)
+            {
+                SetFromParent(itemFirst, crossedFirstSolution, index);
+                SetFromParent(itemSecond, crossedSecondSolution, index);
+            }
+
+            for (var index = crossIndex2 + 1; index < numberOfItems; index++)
+            {
+                SetFromParent(itemFirst, crossedFirstSolution, index);
+                SetFromParent(itemSecond, crossedSecondSolution, index);
+            }
+
+            for (var index = 0; index < numberOfItems; index++)
+            {
+                SetFromAnotherParent(crossedFirstSolution, itemSecond, index);
+                SetFromAnotherParent(crossedSecondSolution, itemFirst, index);
+            }
+
+            return new Tuple<int[], int[]>(crossedFirstSolution, crossedSecondSolution);
+        }
+
+        private static void SetFromAnotherParent(int[] crossedSolution, int[] parent, int index)
+        {
+            if (crossedSolution[index] != DefaultUnsetSolution)
+            {
+                return;
+            }
+
+            crossedSolution[index] = parent[index];
+        }
+
+        private static void SetFromParent(int[] parent, int[] crossedSolution, int index)
+        {
+            var valueFromParent = parent[index];
+
+            if (crossedSolution.All(value => value != valueFromParent))
+            {
+                crossedSolution[index] = valueFromParent;
+            }
         }
     }
 }

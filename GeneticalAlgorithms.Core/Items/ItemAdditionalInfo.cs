@@ -9,5 +9,7 @@
         public double ExpectedNumberOfCopies { get; set; }
 
         public int RealNumberOfCopies { get; set; }
+
+        public int CurrentNumberOfCopies { get; set; } = 0;
     }
 }

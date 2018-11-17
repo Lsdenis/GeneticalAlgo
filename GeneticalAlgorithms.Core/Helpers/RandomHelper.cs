@@ -141,5 +141,59 @@ namespace GeneticalAlgorithms.Core.Helpers
         {
             return Random.Next(0, 2);
         }
+
+        public static int[] GenerateTSPSolution(int count)
+        {
+            var solution = new int[count];
+            var usedCities = new bool[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                var nextCity = Random.Next(0, count);
+                while (usedCities[nextCity])
+                {
+                    nextCity = Random.Next(0, count);
+                }
+
+                solution[i] = nextCity;
+            }
+
+            return solution;
+        }
+
+        public static List<int[]> GetReproductionTSPItems(
+            Dictionary<int[], ItemAdditionalInfo> itemToResultDictionary,
+            int itemsCount)
+        {
+            var items = new List<int[]>();
+
+            while (items.Count < itemsCount)
+            {
+                var nextItemRandom = Random.NextDouble();
+
+                double randomSum = 0;
+                foreach (var itemInfo in itemToResultDictionary)
+                {
+                    randomSum += itemInfo.Value.NormalizedValue;
+                    if (nextItemRandom > randomSum ||
+                        itemInfo.Value.RealNumberOfCopies == itemInfo.Value.CurrentNumberOfCopies &&
+                        itemInfo.Value.RealNumberOfCopies != 0)
+                    {
+                        continue;
+                    }
+
+                    items.Add(itemInfo.Key);
+                    itemInfo.Value.CurrentNumberOfCopies++;
+                    break;
+                }
+            }
+
+            return items;
+        }
+
+        public static int GetTSPRecombinationIndex(int begin, int end)
+        {
+            return Random.Next(begin, end + 1);
+        }
     }
 }

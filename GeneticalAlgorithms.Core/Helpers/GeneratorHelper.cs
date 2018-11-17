@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using GeneticalAlgorithms.Core.Items;
 
 namespace GeneticalAlgorithms.Core.Helpers
@@ -35,6 +34,18 @@ namespace GeneticalAlgorithms.Core.Helpers
             }
 
             return population;
+        }
+
+        public static List<int[]> GenerateTSPSolutions(int count, int populationNumber)
+        {
+            var generate = new List<int[]>();
+
+            for (var i = 0; i < populationNumber; i++)
+            {
+                generate.Add(RandomHelper.GenerateTSPSolution(count));
+            }
+
+            return generate;
         }
     }
 }
