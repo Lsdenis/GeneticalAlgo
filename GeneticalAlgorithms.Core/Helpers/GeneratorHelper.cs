@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using GeneticalAlgorithms.Core.Items;
 
 namespace GeneticalAlgorithms.Core.Helpers
@@ -14,6 +15,23 @@ namespace GeneticalAlgorithms.Core.Helpers
             for (var i = 0; i < populationNumber; i++)
             {
                 population.Add(new Item(RandomHelper.GenerateBinaryItem(numberOfGens)));
+            }
+
+            return population;
+        }
+
+        public static List<RealItem> Generate(
+            int minValue,
+            int maxValue,
+            int accuracy,
+            int populationNumber)
+        {
+            var population = new List<RealItem>();
+
+            for (var i = 0; i < populationNumber; i++)
+            {
+                population.Add(new RealItem(RandomHelper.GenerateDoubleForItem(minValue, maxValue, accuracy),
+                    RandomHelper.GenerateDoubleForItem(minValue, maxValue, accuracy)));
             }
 
             return population;

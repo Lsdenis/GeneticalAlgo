@@ -72,6 +72,7 @@
     <Compile Include="Custom\Command.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModels\FirstLabViewModel.cs" />
+    <Compile Include="ViewModels\SecondLabViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

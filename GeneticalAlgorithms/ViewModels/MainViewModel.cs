@@ -14,7 +14,6 @@ namespace GeneticalAlgorithms.ViewModels
     {
         private ICommand _calculateButtonCommand;
         private IList<DataPoint> _functionSeries;
-        private List<Item> _items;
         private IList<DataPoint> _itemsSeries;
         private string _itemValue;
         private string _maxItemValueFunction;
@@ -24,39 +23,19 @@ namespace GeneticalAlgorithms.ViewModels
 
         protected abstract int MaxValue { get; }
 
-        public int SolutionAccuracy { get; set; }
+        public int SolutionAccuracy { get; set; } = 3;
 
-        public List<Item> Items
-        {
-            get => _items;
-            protected set
-            {
-                _items = value?.OrderBy(item => item.GetDoubleValue(MinValue, MaxValue)).ToList();
+        public abstract List<Item> Items { get; set; }
 
-                if (value == null)
-                {
-                    return;
-                }
+        public int PopulationNumber { get; set; } = 10;
 
-                ItemsSeries = _items.Select(item => new DataPoint(item.GetDoubleValue(MinValue, MaxValue),
-                    Function(item.GetDoubleValue(MinValue, MaxValue)))).ToList();
+        public double MutationPossibility { get; set; } = 100;
 
-                var maxItem = _items.Aggregate((i, j) =>
-                    Function(i.GetDoubleValue(MinValue, MaxValue)) > Function(j.GetDoubleValue(MinValue, MaxValue))
-                        ? i
-                        : j);
+        public double CrossingoverPossibility { get; set; } = 100;
 
-                var doubleValue = maxItem.GetDoubleValue(MinValue, MaxValue);
-                ItemValue = doubleValue.ToString();
-                MaxItemValueFunction = Function(doubleValue).ToString();
-            }
-        }
+        public int MaxSteps { get; set; } = 100;
 
-        public int PopulationNumber { get; set; }
-
-        public double MutationPossibility { get; set; }
-
-        public double CrossingoverPossibility { get; set; }
+        protected int NumberOfSteps;
 
         public ICommand CalculateButtonCommand =>
             _calculateButtonCommand ?? (_calculateButtonCommand = new Command(OnCalculateClicked, true));
@@ -106,7 +85,7 @@ namespace GeneticalAlgorithms.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected abstract double Function(double inputValue);
+        protected abstract double Function(params double[] doubleParams);
 
         protected abstract void OnCalculateClicked();
 

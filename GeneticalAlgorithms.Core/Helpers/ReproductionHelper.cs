@@ -7,11 +7,15 @@ namespace GeneticalAlgorithms.Core.Helpers
 {
     public static class ReproductionHelper
     {
-        public static List<Item> Reproduce(Func<double, double> function, List<Item> items, int minValue, int maxValue)
+        public static List<Item> Reproduce(
+            Func<double[], double> function,
+            List<Item> items,
+            int minValue,
+            int maxValue)
         {
             var itemToResultDictionary = items.ToDictionary(item => item,
                 item => new ItemAdditionalInfo
-                    {FunctionValue = function.Invoke(item.GetDoubleValue(minValue, maxValue))});
+                    {FunctionValue = function.Invoke(new[] {item.GetDoubleValue(minValue, maxValue)})});
 
             // to remove useless gens
             itemToResultDictionary = itemToResultDictionary.Where(pair => pair.Value.FunctionValue > 0).
@@ -27,6 +31,32 @@ namespace GeneticalAlgorithms.Core.Helpers
             }
 
             return RandomHelper.GetReproductionItems(itemToResultDictionary, items.Count);
+        }
+
+        public static List<RealItem> ReproduceReal(
+            Func<double[], double> function,
+            List<RealItem> items)
+        {
+            var itemToResultDictionary = items.ToDictionary(item => item,
+                item => new ItemAdditionalInfo
+                    { FunctionValue = function.Invoke(new[] { item.X1, item.X2 }) });
+
+            var maxFunctionValue = itemToResultDictionary.Max(pair => pair.Value.FunctionValue);
+            foreach (var additionalInfo in itemToResultDictionary.Values)
+            {
+                additionalInfo.FunctionValue = maxFunctionValue - additionalInfo.FunctionValue;
+            }
+
+            var sumOfFunc = itemToResultDictionary.Sum(pair => Math.Abs(pair.Value.FunctionValue));
+
+            foreach (var itemInfo in itemToResultDictionary)
+            {
+                itemInfo.Value.NormalizedValue = itemInfo.Value.FunctionValue / sumOfFunc;
+                itemInfo.Value.ExpectedNumberOfCopies = itemInfo.Value.NormalizedValue * items.Count;
+                itemInfo.Value.RealNumberOfCopies = Convert.ToInt32(Math.Round(itemInfo.Value.ExpectedNumberOfCopies));
+            }
+
+            return RandomHelper.GetReproductionRealItems(itemToResultDictionary, items.Count);
         }
     }
 }

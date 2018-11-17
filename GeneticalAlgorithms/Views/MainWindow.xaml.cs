@@ -11,7 +11,7 @@ namespace GeneticalAlgorithms.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new FirstLabViewModel();
+            DataContext = new SecondLabViewModel();
         }
     }
 }

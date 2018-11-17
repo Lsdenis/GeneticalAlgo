@@ -96,5 +96,50 @@ namespace GeneticalAlgorithms.Core.Helpers
         {
             return Random.Next(0, numberOfGens);
         }
+
+        public static double GenerateDoubleForItem(int minValue, int maxValue, int accuracy)
+        {
+            var intValue = Random.Next(minValue, maxValue + 1);
+            var afterDotValue = Random.Next(Convert.ToInt32(Math.Pow(10, accuracy) - 1));
+
+            return Convert.ToDouble($"{intValue}.{afterDotValue}");
+        }
+
+        public static List<RealItem> GetReproductionRealItems(
+            Dictionary<RealItem, ItemAdditionalInfo> itemToResultDictionary,
+            int itemsCount)
+        {
+            var items = new List<RealItem>();
+
+            while (items.Count < itemsCount)
+            {
+                var nextItemRandom = Random.NextDouble();
+
+                double randomSum = 0;
+                foreach (var itemInfo in itemToResultDictionary)
+                {
+                    randomSum += itemInfo.Value.NormalizedValue;
+                    if (nextItemRandom > randomSum)
+                    {
+                        continue;
+                    }
+
+                    items.Add(itemInfo.Key);
+                    break;
+                }
+            }
+
+            return items;
+        }
+
+        public static double GetRecombinationIndex()
+        {
+            return Random.NextDouble();
+        }
+
+        public static int GetRealMutationValue()
+        {
+            return Random.Next(0, 2);
+        }
     }
 }
