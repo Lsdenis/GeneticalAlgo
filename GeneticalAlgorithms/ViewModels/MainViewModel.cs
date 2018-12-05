@@ -29,7 +29,7 @@ namespace GeneticalAlgorithms.ViewModels
 
         public abstract List<Item> Items { get; set; }
 
-        public int PopulationNumber { get; set; } = 10;
+        public int PopulationNumber { get; set; }
 
         public int MutationPossibility { get; set; } = 100;
 

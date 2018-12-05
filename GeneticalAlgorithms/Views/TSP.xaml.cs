@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using GeneticalAlgorithms.Core.Items;
@@ -24,6 +25,7 @@ namespace GeneticalAlgorithms.Views
         private void DrawPath(List<TSPItem> tour, int[] order)
         {
             PathGrid.Children.Clear();
+            var grid = new Grid();
             for (var i = 0; i < order.Length; i++)
             {
                 var firstIndex = i;
@@ -33,15 +35,17 @@ namespace GeneticalAlgorithms.Views
                     nextIndex = 0;
                 }
 
-                PathGrid.Children.Add(new Line
+                grid.Children.Add(new Line
                 {
-                    X1 = tour[firstIndex].X * Multiplier,
-                    Y1 = tour[firstIndex].Y * Multiplier,
-                    X2 = tour[nextIndex].X * Multiplier,
-                    Y2 = tour[nextIndex].Y * Multiplier,
+                    X1 = tour[order[firstIndex]].X * Multiplier,
+                    Y1 = tour[order[firstIndex]].Y * Multiplier,
+                    X2 = tour[order[nextIndex]].X * Multiplier,
+                    Y2 = tour[order[nextIndex]].Y * Multiplier,
                     Stroke = Brushes.Green
                 });
             }
+
+            PathGrid.Children.Add(grid);
         }
     }
 }

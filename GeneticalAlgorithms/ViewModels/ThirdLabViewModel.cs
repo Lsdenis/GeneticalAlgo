@@ -44,7 +44,7 @@ namespace GeneticalAlgorithms.ViewModels
 
         public List<int[]> Solutions { get; set; }
 
-        public int PopulationNumber { get; set; } = 10;
+        public int PopulationNumber { get; set; }
 
         public double MutationPossibility { get; set; } = 100;
 

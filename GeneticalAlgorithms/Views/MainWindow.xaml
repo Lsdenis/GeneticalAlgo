@@ -30,7 +30,11 @@
         <oxy:Plot Grid.RowSpan="9" Grid.Column="0">
             <oxy:Plot.Series>
                 <oxy:LineSeries ItemsSource="{Binding FunctionSeries}" />
-                <oxy:LineSeries ItemsSource="{Binding ItemsSeries}" />
+                <oxy:LineSeries
+                    BrokenLineColor="Red"
+                    BrokenLineThickness="4"
+                    ItemsSource="{Binding ItemsSeries}"
+                    Color="Red" />
             </oxy:Plot.Series>
         </oxy:Plot>
 
