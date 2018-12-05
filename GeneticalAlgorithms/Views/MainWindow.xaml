@@ -24,9 +24,10 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <oxy:Plot Grid.RowSpan="8" Grid.Column="0">
+        <oxy:Plot Grid.RowSpan="9" Grid.Column="0">
             <oxy:Plot.Series>
                 <oxy:LineSeries ItemsSource="{Binding FunctionSeries}" />
                 <oxy:LineSeries ItemsSource="{Binding ItemsSeries}" />
@@ -111,7 +112,10 @@
                 Margin="10,0"
                 Command="{Binding NextStepButtonCommand}"
                 Content="Следующий шаг" />
-            <Button Margin="10,0" Content="Очистить" />
+            <Button
+                Margin="10,0"
+                Command="{Binding GenerateButtonCommand}"
+                Content="Сгенерировать" />
         </StackPanel>
 
         <StackPanel
@@ -121,6 +125,13 @@
             Orientation="Horizontal">
             <Label Content="Значение:" />
             <Label Content="{Binding ItemValue}" />
+        </StackPanel>
+
+        <StackPanel
+            Grid.Row="7"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Orientation="Horizontal">
             <Label Content="Значение функции:" />
             <Label Content="{Binding MaxItemValueFunction}" />
         </StackPanel>

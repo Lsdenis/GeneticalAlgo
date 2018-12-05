@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using GeneticalAlgorithms.Annotations;
@@ -14,10 +13,13 @@ namespace GeneticalAlgorithms.ViewModels
     {
         private ICommand _calculateButtonCommand;
         private IList<DataPoint> _functionSeries;
+        private ICommand _generateButtonCommand;
         private IList<DataPoint> _itemsSeries;
         private string _itemValue;
         private string _maxItemValueFunction;
         private ICommand _nextStepButtonCommand;
+
+        protected int NumberOfSteps;
 
         protected abstract int MinValue { get; }
 
@@ -29,16 +31,17 @@ namespace GeneticalAlgorithms.ViewModels
 
         public int PopulationNumber { get; set; } = 10;
 
-        public double MutationPossibility { get; set; } = 100;
+        public int MutationPossibility { get; set; } = 100;
 
-        public double CrossingoverPossibility { get; set; } = 100;
+        public int CrossingoverPossibility { get; set; } = 100;
 
         public int MaxSteps { get; set; } = 100;
 
-        protected int NumberOfSteps;
-
         public ICommand CalculateButtonCommand =>
             _calculateButtonCommand ?? (_calculateButtonCommand = new Command(OnCalculateClicked, true));
+
+        public ICommand GenerateButtonCommand =>
+            _generateButtonCommand ?? (_generateButtonCommand = new Command(OnGenerateClicked, true));
 
         public ICommand NextStepButtonCommand =>
             _nextStepButtonCommand ?? (_nextStepButtonCommand = new Command(OnNextStepClicked, true));
@@ -90,6 +93,8 @@ namespace GeneticalAlgorithms.ViewModels
         protected abstract void OnCalculateClicked();
 
         protected abstract void OnNextStepClicked();
+
+        protected abstract void OnGenerateClicked();
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GeneticalAlgorithms.Core.Helpers;
 using GeneticalAlgorithms.Core.Items;
 using OxyPlot;
@@ -27,29 +28,32 @@ namespace GeneticalAlgorithms.ViewModels
         protected override void OnCalculateClicked()
         {
             NumberOfSteps = 0;
-            var functionValues = new List<DataPoint>();
-            for (double i = MinValue; i < MaxValue; i += 0.1)
-            {
-                functionValues.Add(new DataPoint(i, i));
-            }
-
-            FunctionSeries = functionValues;
-
             RealItems = GeneratorHelper.Generate(MinValue, MaxValue, SolutionAccuracy, PopulationNumber);
         }
 
         protected override void OnNextStepClicked()
         {
-            if (NumberOfSteps == MaxSteps)
-            {
-                return;
-            }
-
             NumberOfSteps++;
             var reproduceItems = ReproductionHelper.ReproduceReal(Function, RealItems);
-            var newItems = CrossingoverHelper.MakeRealCrossingover(reproduceItems);
-            MutationHelper.MutateReal(newItems, NumberOfSteps, MaxSteps);
+            var newItems = CrossingoverHelper.MakeRealCrossingover(reproduceItems, SolutionAccuracy, CrossingoverPossibility);
+//            MutationHelper.MutateReal(newItems, NumberOfSteps, MaxSteps, MutationPossibility);
             RealItems = newItems;
+
+            var maxItem = RealItems.Aggregate((i, j) =>
+                Function(i.X1, i.X2) > Function(j.X1, j.X2)
+                    ? i
+                    : j);
+
+            ItemValue = $"x1: {maxItem.X1}\nx2: {maxItem.X2}";
+            MaxItemValueFunction = Function(maxItem.X1, maxItem.X2).ToString();
+        }
+
+        protected override void OnGenerateClicked()
+        {
+            for (var i = 0; i < MaxSteps; i++)
+            {
+                OnNextStepClicked();
+            }
         }
     }
 }

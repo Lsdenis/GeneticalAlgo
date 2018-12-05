@@ -97,6 +97,11 @@ namespace GeneticalAlgorithms.Core.Helpers
             return Random.Next(0, numberOfGens);
         }
 
+        public static bool ShouldActionBePerformed(int possibility)
+        {
+            return Random.Next(0, 101) < possibility;
+        }
+
         public static double GenerateDoubleForItem(int minValue, int maxValue, int accuracy)
         {
             var intValue = Random.Next(minValue, maxValue + 1);

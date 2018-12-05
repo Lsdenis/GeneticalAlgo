@@ -68,9 +68,17 @@ namespace GeneticalAlgorithms.ViewModels
         {
             NumberOfSteps++;
             var reproduceItems = ReproductionHelper.Reproduce(Function, Items, MinValue, MaxValue);
-            var newItems = CrossingoverHelper.MakeCrossingover(reproduceItems);
-            MutationHelper.Mutate(newItems);
+            var newItems = CrossingoverHelper.MakeCrossingover(reproduceItems, CrossingoverPossibility);
+            MutationHelper.Mutate(newItems, MutationPossibility);
             Items = newItems;
+        }
+
+        protected override void OnGenerateClicked()
+        {
+            for (var i = 0; i < MaxSteps; i++)
+            {
+                OnNextStepClicked();
+            }
         }
     }
 }

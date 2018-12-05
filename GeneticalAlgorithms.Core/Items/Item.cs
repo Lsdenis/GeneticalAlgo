@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace GeneticalAlgorithms.Core.Items
 {
-    public class Item
+    public class Item : ICloneable
     {
         public Item(BitArray value)
         {
@@ -18,6 +18,11 @@ namespace GeneticalAlgorithms.Core.Items
             Value.CopyTo(array, 0);
 
             return minValue + array[0] * ((maxValue - minValue) / (Math.Pow(2, Value.Length) - 1));
+        }
+
+        public object Clone()
+        {
+            return new Item(Value);
         }
     }
 }

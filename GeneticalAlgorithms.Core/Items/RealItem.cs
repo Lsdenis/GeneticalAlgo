@@ -1,6 +1,8 @@
-﻿namespace GeneticalAlgorithms.Core.Items
+﻿using System;
+
+namespace GeneticalAlgorithms.Core.Items
 {
-    public class RealItem
+    public class RealItem : ICloneable
     {
         public RealItem(double x1, double x2)
         {
@@ -11,5 +13,10 @@
         public double X1 { get; }
 
         public double X2 { get; }
+
+        public object Clone()
+        {
+            return new RealItem(X1, X2);
+        }
     }
 }

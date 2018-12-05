@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace GeneticalAlgorithms.ViewModels
 {
     public class ThirdLabViewModel : INotifyPropertyChanged
     {
+        private readonly Action<List<TSPItem>, int[]> _drawPath;
         private const int SkipLines = 6;
         private string _bestFunction;
         private string _bestFunctionValue;
@@ -24,6 +26,11 @@ namespace GeneticalAlgorithms.ViewModels
 
         protected int NumberOfSteps = 0;
         private ICommand _startButtonCommand;
+
+        public ThirdLabViewModel(Action<List<TSPItem>, int[]> drawPath)
+        {
+            _drawPath = drawPath;
+        }
 
         public List<TSPItem> Items
         {
@@ -131,6 +138,8 @@ namespace GeneticalAlgorithms.ViewModels
 
             BestFunctionValue = bestSolution.Aggregate(string.Empty, (s, i) => s += $"\t{i}");
             BestFunction = bestValue.ToString();
+
+            _drawPath.Invoke(Items, bestSolution);
         }
 
         [NotifyPropertyChangedInvocator]

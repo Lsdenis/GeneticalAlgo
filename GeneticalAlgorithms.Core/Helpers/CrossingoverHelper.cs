@@ -10,17 +10,25 @@ namespace GeneticalAlgorithms.Core.Helpers
     {
         private const int DefaultUnsetSolution = -1;
 
-        public static List<Item> MakeCrossingover(List<Item> reproduceItems)
+        public static List<Item> MakeCrossingover(List<Item> reproduceItems, int crossingoverPossibility)
         {
             var newItems = new List<Item>();
             var pairs = RandomHelper.GenerateCrossingoverPairs(reproduceItems.Count);
 
             foreach (var pair in pairs)
             {
-                var crossingoverItems = PerformCrossingover(reproduceItems, pair);
+                if (!RandomHelper.ShouldActionBePerformed(crossingoverPossibility))
+                {
+                    newItems.Add((Item) reproduceItems[pair.Item1].Clone());
+                    newItems.Add((Item) reproduceItems[pair.Item2].Clone());
+                }
+                else
+                {
+                    var crossingoverItems = PerformCrossingover(reproduceItems, pair);
 
-                newItems.Add(crossingoverItems.Item1);
-                newItems.Add(crossingoverItems.Item2);
+                    newItems.Add(crossingoverItems.Item1);
+                    newItems.Add(crossingoverItems.Item2);
+                }
             }
 
             return newItems;
@@ -36,7 +44,7 @@ namespace GeneticalAlgorithms.Core.Helpers
             var crossIndex = RandomHelper.GetCrossIndex(numberOfGens);
             var crossedFirstItemData = new BitArray(numberOfGens);
             var crossedSecondItemData = new BitArray(numberOfGens);
-            for (var i = 0; i <= numberOfGens; i++)
+            for (var i = 0; i < numberOfGens; i++)
             {
                 if (crossIndex > i)
                 {
@@ -53,17 +61,28 @@ namespace GeneticalAlgorithms.Core.Helpers
             return new Tuple<Item, Item>(new Item(crossedFirstItemData), new Item(crossedSecondItemData));
         }
 
-        public static List<RealItem> MakeRealCrossingover(List<RealItem> reproduceItems)
+        public static List<RealItem> MakeRealCrossingover(
+            List<RealItem> reproduceItems,
+            int solutionAccuracy,
+            int crossingoverPossibility)
         {
             var newItems = new List<RealItem>();
             var pairs = RandomHelper.GenerateCrossingoverPairs(reproduceItems.Count);
 
             foreach (var pair in pairs)
             {
-                var crossingoverItems = PerformRealCrossingover(reproduceItems, pair);
+                if (!RandomHelper.ShouldActionBePerformed(crossingoverPossibility))
+                {
+                    newItems.Add((RealItem) reproduceItems[pair.Item1].Clone());
+                    newItems.Add((RealItem) reproduceItems[pair.Item1].Clone());
+                }
+                else
+                {
+                    var crossingoverItems = PerformRealCrossingover(reproduceItems, pair, solutionAccuracy);
 
-                newItems.Add(crossingoverItems.Item1);
-                newItems.Add(crossingoverItems.Item2);
+                    newItems.Add(crossingoverItems.Item1);
+                    newItems.Add(crossingoverItems.Item2);
+                }
             }
 
             return newItems;
@@ -76,7 +95,8 @@ namespace GeneticalAlgorithms.Core.Helpers
 
         private static Tuple<RealItem, RealItem> PerformRealCrossingover(
             List<RealItem> reproduceItems,
-            Tuple<int, int> pair)
+            Tuple<int, int> pair,
+            int solutionAccuracy)
         {
             var itemFirst = reproduceItems[pair.Item1];
             var itemSecond = reproduceItems[pair.Item2];
@@ -84,10 +104,10 @@ namespace GeneticalAlgorithms.Core.Helpers
             var crossIndex1 = RandomHelper.GetRecombinationIndex();
             var crossIndex2 = RandomHelper.GetRecombinationIndex();
 
-            var firstX1 = GetCrossedValue(itemFirst.X1, itemSecond.X1, crossIndex1);
-            var firstX2 = GetCrossedValue(itemFirst.X2, itemSecond.X2, crossIndex2);
-            var secondX1 = GetCrossedValue(itemFirst.X1, itemSecond.X1, crossIndex1);
-            var secondX2 = GetCrossedValue(itemFirst.X2, itemSecond.X2, crossIndex2);
+            var firstX1 = Math.Round(GetCrossedValue(itemFirst.X1, itemSecond.X1, crossIndex1), solutionAccuracy);
+            var firstX2 = Math.Round(GetCrossedValue(itemFirst.X2, itemSecond.X2, crossIndex2), solutionAccuracy);
+            var secondX1 = Math.Round(GetCrossedValue(itemFirst.X1, itemSecond.X1, crossIndex1), solutionAccuracy);
+            var secondX2 = Math.Round(GetCrossedValue(itemFirst.X2, itemSecond.X2, crossIndex2), solutionAccuracy);
 
             var crossedFirstRealItem = new RealItem(firstX1, firstX2);
             var crossedSecondRealItem = new RealItem(secondX1, secondX2);

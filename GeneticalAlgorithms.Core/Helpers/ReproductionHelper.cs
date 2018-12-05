@@ -49,6 +49,11 @@ namespace GeneticalAlgorithms.Core.Helpers
 
             var sumOfFunc = itemToResultDictionary.Sum(pair => Math.Abs(pair.Value.FunctionValue));
 
+            if (sumOfFunc == 0 || !sumOfFunc.HasValue())
+            {
+                return items;
+            }
+
             foreach (var itemInfo in itemToResultDictionary)
             {
                 itemInfo.Value.NormalizedValue = itemInfo.Value.FunctionValue / sumOfFunc;
@@ -57,6 +62,11 @@ namespace GeneticalAlgorithms.Core.Helpers
             }
 
             return RandomHelper.GetReproductionRealItems(itemToResultDictionary, items.Count);
+        }
+
+        public static bool HasValue(this double value)
+        {
+            return !double.IsNaN(value) && !double.IsInfinity(value);
         }
 
         public static List<int[]> ReproduceTSP(List<TSPItem> items, List<int[]> solutions, int populationNumber)
