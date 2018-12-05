@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GeneticalAlgorithms.Core.Items;
 
 namespace GeneticalAlgorithms.Core.Helpers
@@ -85,6 +86,53 @@ namespace GeneticalAlgorithms.Core.Helpers
             return mutationValue *
                    (1 -
                     Math.Pow(realMutationValue, (1 - numberOfSteps / maximumNumberOfSteps) * RealMutationChangeValue));
+        }
+
+        public static void MutateTSP(List<int[]> solutions, int mutationPossibility)
+        {
+            foreach (var solution in solutions)
+            {
+                if (!RandomHelper.ShouldActionBePerformed(mutationPossibility))
+                {
+                    ProceedTSPMutation(solution);
+                }
+                else
+                {
+                    ProceedTSPMutation2(solution);
+                }
+            }
+        }
+
+        private static void ProceedTSPMutation2(int[] itemToMutate)
+        {
+            var numberOfItems = itemToMutate.Length;
+
+            var crossIndex1 = RandomHelper.GetTSPRecombinationIndex(0, numberOfItems - 2);
+            var crossIndex2 = RandomHelper.GetTSPRecombinationIndex(crossIndex1 + 1, numberOfItems - 1);
+
+            var tspSolution = RandomHelper.GenerateTSPSolution(crossIndex2 - crossIndex1 + 1);
+            var clone = itemToMutate.ToList();
+
+            for (var i = 0; i < tspSolution.Length; i++)
+            {
+                itemToMutate[i + crossIndex1] = clone[tspSolution[i] + crossIndex1];
+            }
+        }
+
+        private static void ProceedTSPMutation(int[] itemToMutate)
+        {
+            var numberOfItems = itemToMutate.Length;
+
+            var crossIndex1 = RandomHelper.GetTSPRecombinationIndex(0, numberOfItems - 2);
+            var crossIndex2 = RandomHelper.GetTSPRecombinationIndex(crossIndex1 + 1, numberOfItems - 1);
+
+            var listToReverse = itemToMutate.ToList();
+            listToReverse.Reverse();
+
+            for (var i = crossIndex1; i <= crossIndex2; i++)
+            {
+                itemToMutate[i] = listToReverse[i];
+            }
         }
     }
 }

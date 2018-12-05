@@ -82,6 +82,10 @@ namespace GeneticalAlgorithms.Core.Helpers
             }
 
             var sumOfFunc = itemToResultDictionary.Sum(pair => Math.Abs(pair.Value.FunctionValue));
+            if (sumOfFunc == 0)
+            {
+                return solutions;
+            }
 
             foreach (var itemInfo in itemToResultDictionary)
             {

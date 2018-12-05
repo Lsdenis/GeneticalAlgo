@@ -46,9 +46,9 @@ namespace GeneticalAlgorithms.ViewModels
 
         public int PopulationNumber { get; set; }
 
-        public double MutationPossibility { get; set; } = 100;
+        public int MutationPossibility { get; set; } = 50;
 
-        public double CrossingoverPossibility { get; set; } = 100;
+        public int CrossingoverPossibility { get; set; } = 100;
 
         public int MaxSteps { get; set; } = 100;
 
@@ -122,7 +122,20 @@ namespace GeneticalAlgorithms.ViewModels
         {
             NumberOfSteps++;
             var repoductionSolutions = ReproductionHelper.ReproduceTSP(Items, Solutions, PopulationNumber);
-            Solutions = CrossingoverHelper.MakeTSPCrossingover(repoductionSolutions);
+            Solutions.AddRange(CrossingoverHelper.MakeTSPCrossingover(repoductionSolutions));
+            Solutions = Solutions.OrderBy(ints => ints.SolutionValue(Items)).Take(PopulationNumber).ToList();
+//            MutationHelper.MutateTSP(Solutions, MutationPossibility);
+
+            foreach (var solution in Solutions)
+            {
+                foreach (var i in solution)
+                {
+                    if (solution.Count(i1 => i1 == i && i1 != -1) > 1)
+                    {
+                        var a = i;
+                    }
+                }
+            }
 
             var bestSolution = new int[0];
             double bestValue = 999999;

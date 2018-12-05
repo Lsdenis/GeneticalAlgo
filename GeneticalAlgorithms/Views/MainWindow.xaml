@@ -27,7 +27,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <oxy:Plot Grid.RowSpan="9" Grid.Column="0">
+        <oxy:Plot Grid.RowSpan="9" Grid.Column="0" Visibility="Hidden">
             <oxy:Plot.Series>
                 <oxy:LineSeries ItemsSource="{Binding FunctionSeries}" />
                 <oxy:LineSeries
@@ -37,6 +37,8 @@
                     Color="Red" />
             </oxy:Plot.Series>
         </oxy:Plot>
+
+        <oxy:PlotView Model="{Binding ChartModel}" Grid.RowSpan="9" Grid.Column="0" />
 
         <Label
             Grid.Row="0"

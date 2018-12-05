@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GeneticalAlgorithms.Core.Items;
 
 namespace GeneticalAlgorithms.Core.Helpers
@@ -161,8 +162,9 @@ namespace GeneticalAlgorithms.Core.Helpers
                 }
 
                 solution[i] = nextCity;
+                usedCities[nextCity] = true;
             }
-
+            
             return solution;
         }
 

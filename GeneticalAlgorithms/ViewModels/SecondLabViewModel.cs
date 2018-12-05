@@ -4,11 +4,41 @@ using System.Linq;
 using GeneticalAlgorithms.Core.Helpers;
 using GeneticalAlgorithms.Core.Items;
 using OxyPlot;
+using OxyPlot.Series;
 
 namespace GeneticalAlgorithms.ViewModels
 {
     public class SecondLabViewModel : MainViewModel
     {
+        public SecondLabViewModel()
+        {
+            ChartModel = new PlotModel();
+
+            //generate values
+            var xx = ArrayBuilder.CreateVector(MinValue, MaxValue, 10);
+            var yy = ArrayBuilder.CreateVector(MinValue, MaxValue, 10);
+            var peaksData = ArrayBuilder.Evaluate((d, d1) => Function(d, d1), xx, yy);
+
+            var cs = new ContourSeries
+            {
+                Color = OxyColors.Black,
+                LabelBackground = OxyColors.White,
+                ColumnCoordinates = yy,
+                RowCoordinates = xx,
+                Data = peaksData
+            };
+            ChartModel.Series.Add(cs);
+
+            var solutions = new ScatterSeries
+            {
+                MarkerType = MarkerType.Circle,
+                MarkerFill = OxyColor.FromRgb(0xFF, 0, 0)
+            };
+            ChartModel.Series.Add(solutions);
+
+            ChartModel.Series.Add(new ScatterSeries());
+        }
+
         protected override int MinValue => -100;
 
         protected override int MaxValue => 100;
@@ -16,6 +46,8 @@ namespace GeneticalAlgorithms.ViewModels
         public override List<Item> Items { get; set; }
 
         public List<RealItem> RealItems { get; set; }
+
+        public PlotModel ChartModel { get; }
 
         protected override double Function(params double[] doubleParams)
         {
@@ -35,17 +67,51 @@ namespace GeneticalAlgorithms.ViewModels
         {
             NumberOfSteps++;
             var reproduceItems = ReproductionHelper.ReproduceReal(Function, RealItems);
-            var newItems = CrossingoverHelper.MakeRealCrossingover(reproduceItems, SolutionAccuracy, CrossingoverPossibility);
-//            MutationHelper.MutateReal(newItems, NumberOfSteps, MaxSteps, MutationPossibility);
+            var newItems =
+                CrossingoverHelper.MakeRealCrossingover(reproduceItems, SolutionAccuracy, CrossingoverPossibility);
+            MutationHelper.MutateReal(newItems, NumberOfSteps, MaxSteps, MutationPossibility);
             RealItems = newItems;
 
-            var maxItem = RealItems.Aggregate((i, j) =>
-                Function(i.X1, i.X2) > Function(j.X1, j.X2)
+            var minItem = RealItems.Aggregate((i, j) =>
+                Function(i.X1, i.X2) < Function(j.X1, j.X2)
                     ? i
                     : j);
 
-            ItemValue = $"x1: {maxItem.X1}\nx2: {maxItem.X2}";
-            MaxItemValueFunction = Function(maxItem.X1, maxItem.X2).ToString();
+            ItemValue = $"x1: {minItem.X1}\nx2: {minItem.X2}";
+            var functionValue = Function(minItem.X1, minItem.X2);
+            MaxItemValueFunction = functionValue.ToString();
+
+            // ------------------------------------------------------
+
+            for (var i = ChartModel.Series.Count - 1; i > 0; i--)
+            {
+                ChartModel.Series.RemoveAt(i);
+            }
+
+            var solutions = new ScatterSeries
+            {
+                MarkerType = MarkerType.Circle,
+                MarkerFill = OxyColor.FromRgb(0, 0, 0xFF)
+            };
+
+            foreach (var p in RealItems)
+            {
+                var plotPoint = new ScatterPoint(p.X1, p.X2, 5);
+                solutions.Points.Add(plotPoint);
+            }
+
+            ChartModel.Series.Add(solutions);
+
+            var minValueSeries = new ScatterSeries
+            {
+                MarkerType = MarkerType.Circle,
+                MarkerFill = OxyColor.FromRgb(0xFF, 0, 0)
+            };
+
+            minValueSeries.Points.Add(new ScatterPoint(minItem.X1, minItem.X2, 7, functionValue));
+            ChartModel.Series.Add(minValueSeries);
+
+            ChartModel.InvalidatePlot(true);
         }
 
         protected override void OnGenerateClicked()
